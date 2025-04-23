@@ -3,25 +3,29 @@
 require ("../../config/conexion.php");
 
 $codigo =$_POST["codigo"];
-$titulo =$_POST["titulo"];
-$descripcion =$_POST["descripcion"];
+
 
 $cnn=conectarDataBase();
 
-$sql="UPDATE tarea set titulo= ? , descripcion = ? WHERE id = ? ";
+$sql="SELECT * FROM tarea WHERE id = ? ";
 
 $smt=$cnn->prepare($sql);
 if (!$smt) {
     die("error:".$cnn->error);
 }
-$smt->bind_param("ssi",$titulo,$descripcion,$codigo);
+$smt->bind_param("i",$codigo);
 
 $smt->execute();
 
-
+$result=$smt->get_result();
 if($smt->affected_rows>0){
 
-   echo "se registro correctamente";
+   while($row=$result->fetch_assoc()){
+
+      echo $row["id"]." - ".$row["titulo"] ." - " . $row["descripcion"];
+      
+   }
+ 
 
 }else{
    echo "Problemas con el registro";
