@@ -18,14 +18,15 @@ $smt->bind_param("i",$codigo);
 $smt->execute();
 
 $result=$smt->get_result();
-if($smt->affected_rows>0){
 
+if($smt->affected_rows>0){
+  $lista=[];
    while($row=$result->fetch_assoc()){
 
-      echo $row["id"]." - ".$row["titulo"] ." - " . $row["descripcion"];
-      
+     $lista[]=$row;
+
    }
- 
+ echo json_encode($lista) ;
 
 }else{
    echo "Problemas con el registro";

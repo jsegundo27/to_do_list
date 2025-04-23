@@ -166,11 +166,11 @@
         <form>
           <div class="form-group">
             <label for="recipient-name" class="col-form-label">Título:</label>
-            <input type="text" class="form-control" id="recipient-name">
+            <input type="text" class="form-control" id="titulo-edit">
           </div>
           <div class="form-group">
             <label for="message-text" class="col-form-label">Descripción:</label>
-            <textarea class="form-control" id="message-text"></textarea>
+            <textarea class="form-control" id="descripcion-edit"></textarea>
           </div>
         </form>
       </div>
@@ -216,8 +216,8 @@
                                         <i class="fa fa-${tarea_des[1]} ${tarea_des[2]} "></i>
                                 </div>
                                 <div style="display: flex; gap: 10px">
-                                    <button class="btn btn-warning fa fa-edit" data-toggle="modal" data-target="#exampleModal" data-id="${tarea.id}" data-nombre="${tarea.nombre}" data-descripcion="${tarea.descripcion}"></button>
-                                    <button class="btn btn-danger fa fa-trash" data-id="${tarea.id}"></button>
+                                    <a class="btn btn-warning fa fa-edit btn-editar" data-toggle="modal" data-target="#exampleModal" data-id="${tarea.id}"></a>
+                                    <a class="btn btn-danger btn-eliminar fa fa-trash" data-id="${tarea.id}" ></a>
                                 </div>
                             </li>
                         `
@@ -228,6 +228,36 @@
             }
      });
 
+     $(document).on("click",".btn-eliminar",function(e){
+        var id = $(this).data("id");
+        $.ajax({
+            url:"php/tarea/tareas_eliminar.php",
+            data:{codigo:id},
+            type:"POST",
+            success: function(response){
+              console.log(response);
+                
+            }
+        });
+     });
+
+     $(document).on("click",".btn-editar",function(e){
+        var id = $(this).data("id");
+        $.ajax({
+            url:"php/tarea/tareas_edit.php",
+            data:{codigo:id},
+            type:"POST",
+            success: function(response){
+                var data=JSON.parse(response);
+               var titulo= $("#titulo-edit");
+               var descripcion=$("#descripcion-edit"); 
+               titulo.val(data[0]["titulo"]);
+               descripcion.val(data[0]["descripcion"]);
+               
+                
+            }
+        });
+     });
 
      function tareaEstado(estado){      
             if (estado == 1) {
