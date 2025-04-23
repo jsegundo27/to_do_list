@@ -1,5 +1,5 @@
 <?php 
-require "config/conexion.php";
+require "../../config/conexion.php";
 
  $db = conectarDataBase();
 
@@ -9,6 +9,7 @@ require "config/conexion.php";
  if (!$smt) {
     die("Algo salio mal ".$db->connect_error);
  }
+
  $smt->execute();
  $result=$smt->get_result();
  $list_tareas=[];
@@ -17,8 +18,9 @@ require "config/conexion.php";
     while($row = $result->fetch_assoc()){
         $list_tareas[]=$row;
     }
+   echo json_encode($list_tareas);
 
  }else{
     echo "error de consulta";
  }
-$smt->close();
+

@@ -101,88 +101,86 @@
             cursor: pointer;
             background:  rgba(236, 236, 236, 0.3);
         }
+         .card-list h4, .card-list p {
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
     </style>
 </head>
 <body>
     
-   <div class="main-tarea">
-        <div class="section1">
-                <div class="tarea-datos">
-                        <div class="contenedor-img">
-                        <img src="assets/img/user-admin.png" alt="">
-                        </div>
-                        <div class="contendor-info">
-                            <h4>Nombre y Apellidos:</h4>
-                            <p>Edwin Jonathan Segundo Chavez</p>
-                            <h4>carrera:</h4>
-                            <p>Ingnieria Sistemas</p>
-                            <h4>correo:</h4>
-                            <p>edwin@gmail.com</p>
-                        </div>
-                </div>
-                <div class="tarea-formulario">
-                    <form action="php/tarea/tareas_create.php" method="POST">
-                        <div class="forn-control">
-                            <input class="form-control" type="text"  placeholder="Ingrese la tarea" name="titulo">
-                        </div>
-                        <div class="forn-control">
-                            <textarea class="form-control" type="text" name="descripcion">  </textarea>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary w-100">Agregar Tarea</button>
-                    </form>
-                </div>
-        </div>
-
-        <div class="section2">
-            <div class="tareas-lista">
-                <ul>
-                    <li class="card card-list p-3 " >
-                        <h4>Tarea 1</h4>
-                        <p>Hacer limpieza tu casa</p>
-                        <div class="btn btn-warning w-50">Pendiente</div>
-                        <div style="display: flex;margin: 10px;">
-                        <a class="btn btn-warning fa fa-edit mr-3" href=""></a><a class="btn btn-danger fa fa-trash" href=""></a>
-                        </div>
-                        
-                    </li>
-                    <li class="card card-list p-3 " >
-                        <h4>Tarea 2</h4>
-                        <p>Hacer limpieza tu casa</p>
-                        <div class="btn btn-primary w-50">Terminado</div>
-                        <div style="display: flex;margin: 10px;">
-                        <a class="btn btn-warning fa fa-edit mr-3" href=""></a><a class="btn btn-danger fa fa-trash" href=""></a>
-                        </div>
-                        
-                    </li>
-                    <li class="card card-list p-3 " >
-                        <h4>Tarea 3</h4>
-                        <p>Hacer limpieza tu casa</p>
-                        <div class="btn btn-warning w-50">Pendiente</div>
-                        <div style="display: flex;margin: 10px;">
-                        <a class="btn btn-warning fa fa-edit mr-3" href=""></a><a class="btn btn-danger fa fa-trash" href=""></a>
-                        </div>
-                        
-                    </li>
-                    <li class="card card-list p-3 " >
-                        <h4>Tarea 4</h4>
-                        <p>Hacer limpieza tu casa</p>
-                        <div class="btn btn-primary w-50">Terminado</div>
-                        <div style="display: flex;margin: 10px;">
-                        <a class="btn btn-warning fa fa-edit mr-3" href=""></a><a class="btn btn-danger fa fa-trash" href=""></a>
-                        </div>
-                        
-                    </li>
-            
-                   
-                </ul>
+<div class="main-tarea">
+    <div class="section1">
+            <div class="tarea-datos">
+                    <div class="contenedor-img">
+                    <img src="assets/img/user-admin.png" alt="">
+                    </div>
+                    <div class="contendor-info">
+                        <h4>Nombre y Apellidos:</h4>
+                        <p>Edwin Jonathan Segundo Chavez</p>
+                        <h4>carrera:</h4>
+                        <p>Ingnieria Sistemas</p>
+                        <h4>correo:</h4>
+                        <p>edwin@gmail.com</p>
+                    </div>
             </div>
+            <div class="tarea-formulario">
+                <form action="php/tarea/tareas_create.php" method="POST">
+                    <div class="forn-control">
+                        <input class="form-control" type="text"  placeholder="Ingrese la tarea" name="titulo">
+                    </div>
+                    <div class="forn-control">
+                        <textarea class="form-control" type="text" name="descripcion">  </textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">Agregar Tarea</button>
+                </form>
+            </div>
+    </div>
+
+    <div class="section2">
+        <div class="tareas-lista">
+        <ul id="lista_tareas">
+                
+                
+            </ul>
         </div>
+    </div>
 
-   </div>
+</div>
 
 
 
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header btn-warning"  >
+        <h5 class="modal-title" id="exampleModalLabel">Editar Tarea</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Título:</label>
+            <input type="text" class="form-control" id="recipient-name">
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Descripción:</label>
+            <textarea class="form-control" id="message-text"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary">Editar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 
@@ -193,19 +191,73 @@
 <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script>
+  $(document).ready(function(){
 
+   
+     $.ajax({
+            url:"php/tarea/tareas_list.php",
+            type:"GET",
+            success: function(response){
+                 var list_tareas=$("#lista_tareas");
+                 var data=JSON.parse(response);
+                    data.forEach(tarea => {
+              
+                  
+                    var tarea_des=tareaEstado(tarea.estado);
+                    
+
+                     lista=`<li class="card card-list p-3 mb-3">
+                                <h4>${tarea.titulo}</h4>
+                                <p>${tarea.descripcion}</p>
+                             
+                                <div class="btn btn-${tarea_des[0]} mb-2" style="border-radius: 50%; "> 
+                                        <i class="fa fa-${tarea_des[1]} ${tarea_des[2]} "></i>
+                                </div>
+                                <div style="display: flex; gap: 10px">
+                                    <button class="btn btn-warning fa fa-edit" data-toggle="modal" data-target="#exampleModal" data-id="${tarea.id}" data-nombre="${tarea.nombre}" data-descripcion="${tarea.descripcion}"></button>
+                                    <button class="btn btn-danger fa fa-trash" data-id="${tarea.id}"></button>
+                                </div>
+                            </li>
+                        `
+                     list_tareas.append(lista); 
+                 
+                    });
+                
+            }
+     });
+
+
+     function tareaEstado(estado){      
+            if (estado == 1) {
+                color="primary";
+                icono="check";
+                clas="";
+            }else{
+                color="warning";
+                icono="exclamation";
+                clas="p-1";
+            }
+
+            let lista = [color, icono, clas];
+
+            return lista ;
+     }
+  });
+        
+</script>
 </body>
 </html>
 
 
  <!--
-    <section id="lista_tareas">
-    
-
-include ("php/tarea/tareas_list.php");
-foreach(  $list_tareas as $tarea){
-    echo $tarea["titulo"];
-}
-
-</section>
+var li = $("<li>").addClass("card card-list p-3 mb-3");
+li.append(`<h4>${tarea.nombre}</h4>`);
+li.append(`<p>${tarea.descripcion}</p>`);
+// y así sigues...
+list_tareas.append(li);
 -->  
+
+
+             
