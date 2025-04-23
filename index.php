@@ -125,12 +125,13 @@
                     </div>
             </div>
             <div class="tarea-formulario">
-                <form action="php/tarea/tareas_create.php" method="POST">
+                <form action="php/tarea/tareas_create.php" id="form-tarea" method="POST">
                     <div class="forn-control">
-                        <input class="form-control" type="text"  placeholder="Ingrese la tarea" name="titulo">
+                    
+                        <input class="form-control" type="text"  placeholder="Ingrese la tarea" id="titulo" name="titulo">
                     </div>
                     <div class="forn-control">
-                        <textarea class="form-control" type="text" name="descripcion">  </textarea>
+                        <textarea class="form-control" type="text" id="descripcion" name="descripcion">  </textarea>
                     </div>
                     
                     <button type="submit" class="btn btn-primary w-100">Agregar Tarea</button>
@@ -163,20 +164,21 @@
         </button>
       </div>
       <div class="modal-body">
-        <form>
+        <form id="form-tarea-editar">
           <div class="form-group">
+          <input type="hidden" id="id-tarea" name="id-tarea">
             <label for="recipient-name" class="col-form-label">Título:</label>
-            <input type="text" class="form-control" id="titulo-edit">
+            <input type="text" class="form-control" id="titulo-edit" name="titulo-edit">
           </div>
           <div class="form-group">
-            <label for="message-text" class="col-form-label">Descripción:</label>
-            <textarea class="form-control" id="descripcion-edit"></textarea>
+            <label for="message-text" class="col-form-label" >Descripción:</label>
+            <textarea class="form-control" id="descripcion-edit" name="titulo-edit"></textarea>
           </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary">Editar</button>
+        <button type="submit" class="btn btn-primary" >Editar</button>
       </div>
     </div>
   </div>
@@ -248,13 +250,34 @@
             data:{codigo:id},
             type:"POST",
             success: function(response){
-                var data=JSON.parse(response);
+               var data=JSON.parse(response);
+               console.log(data);
                var titulo= $("#titulo-edit");
                var descripcion=$("#descripcion-edit"); 
+               var id = $("id-tarea");
+               id.val(data[0]["id"]);
                titulo.val(data[0]["titulo"]);
                descripcion.val(data[0]["descripcion"]);
-               
-                
+             
+            }
+        });
+     });
+
+
+     
+     $("form-tarea-editar").submit(function(){
+        var id = $("id-tarea").val();
+        var titulo =$("#titulo-edit").val();
+        var descripcion=$("#descripcion-edit").val();
+        $.ajax({
+            url:"php/tarea/tareas_update.php",
+            data:{codigo:id,titulo:titulo,descripcion:descripcion},
+            type:"POST",
+            success: function(response){
+               var data=JSON.parse(response);
+              
+               console.log(data);
+             
             }
         });
      });
