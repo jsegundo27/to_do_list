@@ -4,7 +4,7 @@ require "../../config/conexion.php";
 
 $db=conectarDataBase();
 
-if (isset($_POST["titulo"]) && isset($_POST["descripcion"] )) {
+if (!empty($_POST["titulo"]) && !empty($_POST["descripcion"] )) {
     $titulo=$_POST["titulo"];
     $descripcion=$_POST["descripcion"];
     $estado=0;
@@ -18,8 +18,10 @@ if (isset($_POST["titulo"]) && isset($_POST["descripcion"] )) {
     $smt->bind_param("ssss",$titulo,$descripcion,$estado,$fecha);
 
     if ($smt->execute()) {
-        echo "se registro correctamente";
+        echo json_encode("se registro correctamente");
+    }else{
+        echo json_encode("Algo salio mal");
     }
 }else{
-    echo "Falta completar los campos";
+        echo  json("Falta completar los campos");
 }

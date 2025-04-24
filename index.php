@@ -7,6 +7,7 @@
     <title>To do List</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <script src="https://kit.fontawesome.com/1241b5bdda.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <style>
       body {
             min-height: 100vh;
@@ -102,10 +103,40 @@
             word-break: break-word;
             overflow-wrap: break-word;
         }
+        /* HTML: <div class="loader"></div> */
+        /* HTML: <div class="loader"></div> */
+        .loader {
+            width: 50px;
+            padding: 8px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: #25b09b;        
+            --_m: 
+            conic-gradient(#0000 10%,#000),
+            linear-gradient(#000 0 0) content-box;
+            -webkit-mask: var(--_m);
+                    mask: var(--_m);
+            -webkit-mask-composite: source-out;
+                    mask-composite: subtract;
+            animation: l3 1s infinite linear;
+        }
+        @keyframes l3 {to{transform: rotate(1turn)}}
+        .container-loader{
+            position:absolute;
+            background:#333;
+        }
     </style>
+
 </head>
 <body>
     
+<div class="container-loader">
+    <div id="loader"  style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    z-index: 9999;">
+    <div class="loader"></div>
+    </div>
+</div>
+
 <div class="main-tarea">
     <div class="section1">
             <div class="tarea-datos">
@@ -122,13 +153,13 @@
                     </div>
             </div>
             <div class="tarea-formulario">
-                <form action="php/tarea/tareas_create.php" id="form-tarea" method="POST">
+                <form  id="form-tarea">
                     <div class="forn-control">
                     
                         <input class="form-control" type="text"  placeholder="Ingrese la tarea" id="titulo" name="titulo">
                     </div>
                     <div class="forn-control">
-                        <textarea class="form-control" type="text" id="descripcion" name="descripcion">  </textarea>
+                        <textarea class="form-control" type="text" id="descripcion" name="descripcion"></textarea>
                     </div>
                     
                     <button type="submit" class="btn btn-primary w-100">Agregar Tarea</button>
@@ -186,12 +217,13 @@
 
 
 
-
-
 <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   $(document).ready(function(){
 
@@ -217,7 +249,9 @@
                                 </div>
                                 <div style="display: flex; gap: 10px">
                                     <a class="btn btn-warning fa fa-edit btn-editar" data-toggle="modal" data-target="#exampleModal" data-id="${tarea.id}"></a>
+                                     <a class="btn btn-secondary btn-estado fa fa-clock" data-id="${tarea.id}" ></a>
                                     <a class="btn btn-danger btn-eliminar fa fa-trash" data-id="${tarea.id}" ></a>
+
                                 </div>
                             </li>
                         `
@@ -230,15 +264,26 @@
 
      $(document).on("click",".btn-eliminar",function(e){
         var id = $(this).data("id");
-        $.ajax({
-            url:"php/tarea/tareas_eliminar.php",
-            data:{codigo:id},
-            type:"POST",
-            success: function(response){
-              console.log(response);
-                
-            }
+        Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción no se puede deshacer.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url:"php/tarea/tareas_eliminar.php",
+                            data:{codigo:id},
+                            type:"POST",
+                            success: function(response){
+                                actualizarDatos();
+                            }
         });
+                    }
+                });
+        
      });
 
      $(document).on("click",".btn-editar",function(e){
@@ -257,13 +302,46 @@
 
                titulo.val(data[0]["titulo"]);
                descripcion.val(data[0]["descripcion"]);
-             
+              
+
+            }
+        });
+     });
+     
+     $(document).on("click",".btn-estado",function(e){
+        var id = $(this).data("id");
+        $.ajax({
+            url:"php/tarea/tareas_estado.php",
+            data:{codigo:id},
+            type:"POST",
+            success: function(response){
+               var data=JSON.parse(response);
+               toastr.success(data);
+               actualizarDatos();
+
             }
         });
      });
 
+        $("#form-tarea").submit(function(e){
+            e.preventDefault();
 
-     
+            var titulo =$("#titulo").val();
+            var descripcion=$("#descripcion").val();
+            validarCampos();    
+            $.ajax({
+                url:"php/tarea/tareas_create.php",
+                data:{titulo:titulo,descripcion:descripcion},
+                type:"POST",
+                success: function(response){
+                var data=JSON.parse(response);
+                toastr.success(data);
+                actualizarDatos();
+
+                }
+            });
+        });
+   
      $("#form-tarea-editar").submit(function(e){
         e.preventDefault();
         var id = $("#id-tarea").val();
@@ -276,12 +354,15 @@
             type:"POST",
             success: function(response){
                var data=JSON.parse(response);
-              
-               console.log(data);
-             
+               toastr.success('¡Tarea editada con éxito!');
+               actualizarDatos();
+
             }
         });
      });
+
+      
+     
 
      function tareaEstado(estado){      
             if (estado == 1) {
@@ -297,6 +378,22 @@
             let lista = [color, icono, clas];
 
             return lista ;
+     }
+
+
+     function validarCampos(){
+        var titulo=$("#titulo").val();
+        var descripcion=$("#descripcion").val();
+        if (titulo=="" || descripcion=="") {
+            toastr.warning('Advertencia: falta llenar campos');
+        }
+     }
+
+     function actualizarDatos(){
+        $("#loader").fadeIn();
+        setTimeout(() => {
+        location.reload();
+     }, 1000);
      }
   });
         
