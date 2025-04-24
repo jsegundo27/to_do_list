@@ -17,13 +17,11 @@ if (!$smt) {
 $smt->bind_param("ssi",$titulo,$descripcion,$codigo);
 
 $smt->execute();
-
-
 if($smt->affected_rows>0){
 
-   echo "se registro correctamente";
+   echo json_encode("se registro correctamente");
 
 }else{
-   echo "Problemas con el registro";
+   echo json_encode("Problemas con el registro");
 }
 

@@ -38,18 +38,15 @@
             min-width: 1000px;
             width: 60%;
             display: flex !important;
-           
             background:#fbfcfc;
             padding: 20px;
             border-radius: 8px;
-     
+    
         }
         .section1{
             width: 60%;
-         
             padding: 15px;
             border-radius: 10px;
-      
             margin: 10px;
         }
         .section2{
@@ -166,7 +163,7 @@
       <div class="modal-body">
         <form id="form-tarea-editar">
           <div class="form-group">
-          <input type="hidden" id="id-tarea" name="id-tarea">
+            <input type="hidden" id="id-tarea" name="id-tarea">
             <label for="recipient-name" class="col-form-label">Título:</label>
             <input type="text" class="form-control" id="titulo-edit" name="titulo-edit">
           </div>
@@ -174,11 +171,12 @@
             <label for="message-text" class="col-form-label" >Descripción:</label>
             <textarea class="form-control" id="descripcion-edit" name="titulo-edit"></textarea>
           </div>
-        </form>
+        
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
         <button type="submit" class="btn btn-primary" >Editar</button>
+        </form>
       </div>
     </div>
   </div>
@@ -254,8 +252,9 @@
                console.log(data);
                var titulo= $("#titulo-edit");
                var descripcion=$("#descripcion-edit"); 
-               var id = $("id-tarea");
+               var id = $("#id-tarea");
                id.val(data[0]["id"]);
+
                titulo.val(data[0]["titulo"]);
                descripcion.val(data[0]["descripcion"]);
              
@@ -265,8 +264,10 @@
 
 
      
-     $("form-tarea-editar").submit(function(){
-        var id = $("id-tarea").val();
+     $("#form-tarea-editar").submit(function(e){
+        e.preventDefault();
+        var id = $("#id-tarea").val();
+        console.log(id);
         var titulo =$("#titulo-edit").val();
         var descripcion=$("#descripcion-edit").val();
         $.ajax({

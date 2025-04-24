@@ -9,6 +9,6 @@
     if ($cnn->connect_error) {
         die("Conexion fallida ".$cnn->connect_error );
     }
-
+    
     return $cnn;
  }
