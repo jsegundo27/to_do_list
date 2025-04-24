@@ -22,6 +22,7 @@ if ($estado==1) {
 }
 
 
+
 $smt=$cnn->prepare($sql);
 if (!$smt) {
     die("error:".$cnn->error);

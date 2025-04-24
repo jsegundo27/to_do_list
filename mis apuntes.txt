@@ -1,0 +1,2 @@
+es un número (0 o 1), mejor pasarlo como entero real.
+intval();

@@ -9,125 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <script src="https://kit.fontawesome.com/1241b5bdda.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-    <style>
-      body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg,rgb(44, 46, 48), #bdc3c7);
-            background-repeat: no-repeat;
-            background-size: cover;
-            margin: 0;
-            padding: 0;
-            opacity: 0;
-            animation: aparecer 1s ease-in forwards;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-       }
-      
-        @keyframes aparecer {
-            to {
-                opacity: 2;
-            }
-        }
-
-        .main-tarea, .section1, .section2, .card-list {
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
-        }
-        .main-tarea{
-            min-width: 1000px;
-            width: 60%;
-            display: flex !important;
-            background:#fbfcfc;
-            padding: 20px;
-            border-radius: 8px;
-    
-        }
-        .section1{
-            width: 60%;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px;
-        }
-        .section2{
-            width: 40%;
-            padding: 8px;
-            border-radius: 10px;
-         
-            margin: 10px;
-        }
-        .section1 img{
-            max-width: 300px;
-            border-radius: 50%;
-        }
-        .tarea-datos{
-            display: flex;
-            align-items: center;
-            padding: 5px;
-        }
-        .forn-control{
-            margin: 8px;
-        }
-        .contendor-info{
-            padding: 20px;
-        }
-        .tarea-formulario{
-            margin: 20px;
-        }
-        .tareas-lista {
-            padding: 20px;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        .tareas-lista ul{
-            margin: 0;
-            padding: 0;
-            list-style: none;
-            overflow-y: auto; 
-        }
-       
-         .card-list{
-            display: flex;flex-direction:column;align-items: center;
-            margin:10px;
-            transition: all 0.3s ease-in-out;
-         }
-        
-        .card-list:hover {
-            transform: scale(1.02);
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            background:  rgba(236, 236, 236, 0.3);
-        }
-         .card-list h4, .card-list p {
-            word-break: break-word;
-            overflow-wrap: break-word;
-        }
-        /* HTML: <div class="loader"></div> */
-        /* HTML: <div class="loader"></div> */
-        .loader {
-            width: 50px;
-            padding: 8px;
-            aspect-ratio: 1;
-            border-radius: 50%;
-            background: #25b09b;        
-            --_m: 
-            conic-gradient(#0000 10%,#000),
-            linear-gradient(#000 0 0) content-box;
-            -webkit-mask: var(--_m);
-                    mask: var(--_m);
-            -webkit-mask-composite: source-out;
-                    mask-composite: subtract;
-            animation: l3 1s infinite linear;
-        }
-        @keyframes l3 {to{transform: rotate(1turn)}}
-        .container-loader{
-            position:absolute;
-            background:#333;
-        }
-    </style>
-
+    <link rel="stylesheet" href="assets/css/estilos.css">
 </head>
 <body>
     
@@ -170,17 +52,11 @@
 
     <div class="section2">
         <div class="tareas-lista">
-        <ul id="lista_tareas">
-                
-                
-            </ul>
+            <ul id="lista_tareas"></ul>
         </div>
     </div>
 
 </div>
-
-
-
 
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -244,18 +120,16 @@
                      lista=`<li class="card card-list p-3 mb-3">
                                 <h4>${tarea.titulo}</h4>
                                 <p>${tarea.descripcion}</p>
-                             
                                 <div class="btn btn-${tarea_des[0]} mb-2" style="border-radius: 50%; "> 
-                                        <i class="fa fa-${tarea_des[1]} ${tarea_des[2]} "></i>
+                                  <i class="fa fa-${tarea_des[1]} ${tarea_des[2]} "></i>
                                 </div>
                                 <div style="display: flex; gap: 10px">
-                                    <a class="btn btn-warning fa fa-edit btn-editar" data-toggle="modal" data-target="#exampleModal" data-id="${tarea.id}"></a>
-                                     <a class="btn btn-secondary btn-estado fa fa-clock" data-id="${tarea.id}" ></a>
+                                    <a class="btn btn-warning fa fa-edit btn-editar" data-toggle="modal" 
+                                     data-target="#exampleModal" data-id="${tarea.id}"></a>
+                                    <a class="btn btn-secondary btn-estado fa fa-clock" data-id="${tarea.id}" ></a>
                                     <a class="btn btn-danger btn-eliminar fa fa-trash" data-id="${tarea.id}" ></a>
-
                                 </div>
-                            </li>
-                        `
+                            </li> `
                      list_tareas.append(lista); 
                  
                     });
@@ -324,29 +198,30 @@
         });
      });
 
-        $("#form-tarea").submit(function(e){
-            e.preventDefault();
+     //create tarea
+    $("#form-tarea").submit(function(e){
+        e.preventDefault();
 
-            var titulo =$("#titulo").val();
-            var descripcion=$("#descripcion").val();
-            validarCampos();    
-            $.ajax({
-                url:"php/tarea/tareas_create.php",
-                data:{titulo:titulo,descripcion:descripcion},
-                type:"POST",
-                success: function(response){
+        var titulo =$("#titulo").val();
+        var descripcion=$("#descripcion").val();
+        validarCampos();    
+        $.ajax({
+            url:"php/tarea/tareas_create.php",
+            data:{titulo:titulo,descripcion:descripcion},
+            type:"POST",
+            success: function(response){
 
-                    var data=response;
-                    if (data.status === "success") {
-                        toastr.success(data.message);
-                        actualizarDatos(); // o recargar la lista
-                    } else {
-                        toastr.error(data.message);
-                    }
-
+                var data=response;
+                if (data.status === "success") {
+                    toastr.success(data.message);
+                    actualizarDatos(); // o recargar la lista
+                } else {
+                    toastr.error(data.message);
                 }
-            });
+
+            }
         });
+    });
    
      $("#form-tarea-editar").submit(function(e){
         e.preventDefault();

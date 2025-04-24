@@ -5,8 +5,6 @@ $codigo=$_POST["codigo"];
 
 $cnn=conectarDataBase();
 
-
-
 $sql="DELETE FROM tarea where id = ?";
 
 $smt = $cnn->prepare($sql);

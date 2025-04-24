@@ -7,7 +7,7 @@ $db=conectarDataBase();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     mostrarJson("error", "Método no permitido.");
-    exit;
+   exit; 
 }
 
 if (!empty($_POST["titulo"]) && !empty($_POST["descripcion"] )) {
@@ -30,6 +30,7 @@ if (!empty($_POST["titulo"]) && !empty($_POST["descripcion"] )) {
         mostrarJson("error","Error al preparar la consulta");
         exit;
     }
+
     $smt->bind_param("ssss",$titulo,$descripcion,$estado,$fecha);
 
     if ($smt->execute()) {
@@ -41,8 +42,7 @@ if (!empty($_POST["titulo"]) && !empty($_POST["descripcion"] )) {
     $smt->close();
     $db->close();
 
-
-}else{
+} else{
 
     mostrarJson("error","Falta completar los campos");
 
