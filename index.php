@@ -335,9 +335,14 @@
                 data:{titulo:titulo,descripcion:descripcion},
                 type:"POST",
                 success: function(response){
-                var data=JSON.parse(response);
-                toastr.success(data);
-                actualizarDatos();
+
+                    var data=response;
+                    if (data.status === "success") {
+                        toastr.success(data.message);
+                        actualizarDatos(); // o recargar la lista
+                    } else {
+                        toastr.error(data.message);
+                    }
 
                 }
             });

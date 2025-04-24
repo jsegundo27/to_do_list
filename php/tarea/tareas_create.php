@@ -1,27 +1,58 @@
 <?php 
 
 require "../../config/conexion.php";
+header('Content-Type: application/json');
 
 $db=conectarDataBase();
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    mostrarJson("error", "Método no permitido.");
+    exit;
+}
+
 if (!empty($_POST["titulo"]) && !empty($_POST["descripcion"] )) {
-    $titulo=$_POST["titulo"];
-    $descripcion=$_POST["descripcion"];
-    $estado=0;
+
+    //Convierte caracteres especiales en entidades HTML,
+    $titulo=htmlspecialchars(trim($_POST["titulo"]), ENT_QUOTES, 'UTF-8');
+    $descripcion=htmlspecialchars(trim($_POST["descripcion"]), ENT_QUOTES, 'UTF-8');
+    $estado=intval(0);
     $fecha= date('Y-m-d\TH:i:sP');
+
+    if (strlen($titulo)<3 || strlen($descripcion)<5){
+        mostrarJson("error","El título o la descripción son demasiado cortos.");
+        exit;
+    }
+
     $sql="INSERT INTO tarea (titulo,descripcion,estado,fecha_inicio) values(?,?,?,?)";
 
     $smt=$db->prepare($sql);
     if (!$smt) {
-        die("Algo salio mal ");
+        mostrarJson("error","Error al preparar la consulta");
+        exit;
     }
     $smt->bind_param("ssss",$titulo,$descripcion,$estado,$fecha);
 
     if ($smt->execute()) {
-        echo json_encode("se registro correctamente");
-    }else{
-        echo json_encode("Algo salio mal");
+       mostrarJson("success","registrada correctamente");
+    } else {
+        mostrarJson("error","Error al ejecutar la consulta");
     }
+
+    $smt->close();
+    $db->close();
+
+
 }else{
-        echo  json("Falta completar los campos");
+
+    mostrarJson("error","Falta completar los campos");
+
+}
+
+//el merge para unir dos array
+function mostrarJson($status,$message,$extra=[]){
+    echo json_encode(array_merge([
+        "status" => $status,
+        "message" => $message
+    ],$extra));
+
 }
