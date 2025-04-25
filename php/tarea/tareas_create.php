@@ -1,7 +1,6 @@
 <?php 
 
 require "../../config/conexion.php";
-header('Content-Type: application/json');
 
 $db=conectarDataBase();
 
@@ -34,11 +33,18 @@ if (!empty($_POST["titulo"]) && !empty($_POST["descripcion"] )) {
     $smt->bind_param("ssss",$titulo,$descripcion,$estado,$fecha);
 
     if ($smt->execute()) {
-       mostrarJson("success","registrada correctamente");
-    } else {
-        mostrarJson("error","Error al ejecutar la consulta");
+
+        if ($result=$smt->affected_rows>0) {
+            mostrarJson("success","registrada correctamente");
+         } else {
+             mostrarJson("warning","No se registró ningún dato (posible duplicado o sin cambios)");
+         }
+     
+    }else {
+        mostrarJson("error", "Error al ejecutar la consulta");
     }
 
+    
     $smt->close();
     $db->close();
 
@@ -50,9 +56,11 @@ if (!empty($_POST["titulo"]) && !empty($_POST["descripcion"] )) {
 
 //el merge para unir dos array
 function mostrarJson($status,$message,$extra=[]){
+    header('Content-Type: application/json');
+
     echo json_encode(array_merge([
         "status" => $status,
         "message" => $message
     ],$extra));
-
+    
 }

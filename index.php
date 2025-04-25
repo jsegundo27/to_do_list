@@ -103,8 +103,23 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   $(document).ready(function(){
+    
+     function formatoFecha(fecha_inicio){
+        const fechaCruda = fecha_inicio;
+        const fecha = new Date(fechaCruda.replace(" ", "T")); // convertir a formato ISO
 
-   
+        const formateador = new Intl.DateTimeFormat('es-PE', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+
+        const fechaFormateada = formateador.format(fecha);
+        return fechaFormateada; 
+     }
      $.ajax({
             url:"php/tarea/tareas_list.php",
             type:"GET",
@@ -113,12 +128,11 @@
                  var data=JSON.parse(response);
                     data.forEach(tarea => {
               
-                  
                     var tarea_des=tareaEstado(tarea.estado);
-                    
-
+                    var fecha=formatoFecha(tarea.fecha_inicio);
                      lista=`<li class="card card-list p-3 mb-3">
-                                <h4>${tarea.titulo}</h4>
+                                <p  style="color:#239b56;font-style: italic;font-weight:500">${fecha}</p>
+                                <h4 style="text-align:center">${tarea.titulo}</h4>
                                 <p>${tarea.descripcion}</p>
                                 <div class="btn btn-${tarea_des[0]} mb-2" style="border-radius: 50%; "> 
                                   <i class="fa fa-${tarea_des[1]} ${tarea_des[2]} "></i>
@@ -204,7 +218,7 @@
 
         var titulo =$("#titulo").val();
         var descripcion=$("#descripcion").val();
-        validarCampos();    
+      
         $.ajax({
             url:"php/tarea/tareas_create.php",
             data:{titulo:titulo,descripcion:descripcion},
@@ -235,8 +249,16 @@
             type:"POST",
             success: function(response){
                var data=JSON.parse(response);
-               toastr.success('¡Tarea editada con éxito!');
-               actualizarDatos();
+               if (data.status=="success") {
+                actualizarDatos();
+                toastr.success(data.message);
+               }else if(data.status=="error"){
+                toastr.error(data.message);
+               }else{
+                toastr.warning(data.message);
+               }
+             
+             
 
             }
         });
@@ -261,13 +283,21 @@
             return lista ;
      }
 
+     function formatoFecha(fecha_inicio){
+        const fechaCruda = fecha_inicio;
+        const fecha = new Date(fechaCruda.replace(" ", "T")); // convertir a formato ISO
 
-     function validarCampos(){
-        var titulo=$("#titulo").val();
-        var descripcion=$("#descripcion").val();
-        if (titulo=="" || descripcion=="") {
-            toastr.warning('Advertencia: falta llenar campos');
-        }
+        const formateador = new Intl.DateTimeFormat('es-PE', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+
+        const fechaFormateada = formateador.format(fecha);
+        return fechaFormateada; 
      }
 
      function actualizarDatos(){
@@ -276,6 +306,7 @@
         location.reload();
      }, 1000);
      }
+
   });
         
 </script>

@@ -3,7 +3,7 @@ require "../../config/conexion.php";
 
  $db = conectarDataBase();
 
- $sql="Select * from tarea";
+ $sql="Select * from tarea order by id desc";
  $smt=$db->prepare($sql);
 
  if (!$smt) {
