@@ -250,15 +250,13 @@
             success: function(response){
                var data=JSON.parse(response);
                if (data.status=="success") {
-                actualizarDatos();
-                toastr.success(data.message);
+                    actualizarDatos();
+                    toastr.success(data.message);
                }else if(data.status=="error"){
-                toastr.error(data.message);
+                    toastr.error(data.message);
                }else{
-                toastr.warning(data.message);
+                    toastr.warning(data.message);
                }
-             
-             
 
             }
         });

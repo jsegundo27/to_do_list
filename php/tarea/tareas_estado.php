@@ -2,39 +2,50 @@
 
 require ("../../config/conexion.php");
 
-$codigo =$_POST["codigo"];
+$db=conectarDataBase();
 
-
-$cnn=conectarDataBase();
-
-
-$resultado = $cnn->query("SELECT a.estado FROM tarea as a WHERE id = " . intval($codigo));
-
-if ($resultado && $resultado->num_rows > 0) {
-    $fila = $resultado->fetch_assoc(); // Obtener la fila como array asociativo
-    $estado = $fila['estado']; // Extraer el valor del campo estado
-} 
-
-if ($estado==1) {
-    $sql="UPDATE tarea set estado = 0 WHERE id = ? && estado = 1 ";
-}else{
-    $sql="UPDATE tarea set estado = 1 WHERE id = ? && estado = 0 ";
+if ($_SERVER["REQUEST_METHOD"]!=="POST") {
+    mostrarJson("error", "Metodo no encontrado.");
+    exit; 
 }
 
+if (!empty($_POST["codigo"])) {
 
+    $codigo =intval($_POST["codigo"]);
 
-$smt=$cnn->prepare($sql);
-if (!$smt) {
-    die("error:".$cnn->error);
-}
-$smt->bind_param("i",$codigo);
+    $sql= "UPDATE tarea SET estado = CASE WHEN estado = 1 THEN 0 ELSE 1 END WHERE id = ?";
 
-$smt->execute();
+    $smt=$db->prepare($sql);
+    if (!$smt) {
+        mostrarJson("error","Error al preparar la consulta");
+        exit;
+    }
+    $smt->bind_param("i",$codigo);
 
-if($smt->affected_rows>0){
+    
+    if ($smt->execute()) {
+        if($smt->affected_rows>0){
 
-   echo json_encode("se cambio correctamente");
+            mostrarJson("status", "Se realizo correctamente el cambio de estado");
+    
+        }else{
+            mostrarJson("warning","No se registró ningún dato (posible duplicado o sin cambios)");
+        }    
+    }else{
+            mostrarJson("error", "Error al ejecutar la consulta");
+    }
+
+    $smt->close();
+    $db->close();  
 
 }else{
-   echo json_encode("Problemas con el cambio de estado");
+    mostrarJson("error","Falta completar los campos");
+}
+
+function mostrarJson($status,$message,$extra=[]){
+    header('Content-Type: application/json');
+    echo json_encode(array_merge([
+        "status" => $status,
+        "message" => $message
+    ],$extra));
 }

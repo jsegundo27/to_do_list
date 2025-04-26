@@ -1,2 +1,7 @@
 es un número (0 o 1), mejor pasarlo como entero real.
 intval();
+
+1-optimizar el codigo php 
+2-optimizar el codigo javascript
+3-structurar en carpetas el proyecto
+4-

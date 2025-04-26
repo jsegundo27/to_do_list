@@ -2,33 +2,58 @@
 
 require ("../../config/conexion.php");
 
-$codigo =$_POST["codigo"];
-
-
 $cnn=conectarDataBase();
 
-$sql="SELECT * FROM tarea WHERE id = ? ";
+if(  $_SERVER['REQUEST_METHOD'] !== "POST"){
+    mostrarJson("error","No es el metodo correcto");
+};
 
-$smt=$cnn->prepare($sql);
-if (!$smt) {
-    die("error:".$cnn->error);
-}
-$smt->bind_param("i",$codigo);
+if (!empty($_POST["codigo"])) {
+  
+  $codigo =intval($_POST["codigo"]);
 
-$smt->execute();
+  $sql="SELECT * FROM tarea WHERE id = ? ";
 
-$result=$smt->get_result();
+  $smt=$cnn->prepare($sql);
 
-if($smt->affected_rows>0){
-  $lista=[];
-   while($row=$result->fetch_assoc()){
+  if (!$smt) {
+    mostrarJson("error","No se a preparado la consulta");
+  }
 
-     $lista[]=$row;
+  $smt->bind_param("i",$codigo);
 
-   }
- echo json_encode($lista) ;
+  if ( $smt->execute()) {
 
+      $result=$smt->get_result();
+
+      if($smt->affected_rows>0){
+
+        $lista=[];
+        while($row=$result->fetch_assoc()){
+
+          $lista[]=$row;
+
+        }
+        echo json_encode($lista) ;
+
+      }else{
+        mostrarJson("warning","No se a realizado ningun cambio");
+      }
+   
+  }else{
+     mostrarJson("error","Error al ejecutar la consulta");
+  }
+
+    
 }else{
-   echo "Problemas con el registro";
+  mostrarJson("error","Faltan completar los campos");
 }
 
+function mostrarJson ($status,$message,$extra=[]){
+    header('Content-Type: application/json');
+    echo  json_encode(array_merge([
+         "status" => $status,
+         "message" => $message
+
+    ],$extra));
+}
