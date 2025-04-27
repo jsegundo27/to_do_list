@@ -26,7 +26,7 @@ if (!empty($_POST["codigo"])) {
     if ($smt->execute()) {
         if($smt->affected_rows>0){
 
-            mostrarJson("status", "Se realizo correctamente el cambio de estado");
+            mostrarJson("success", "Se realizo correctamente el cambio de estado");
     
         }else{
             mostrarJson("warning","No se registró ningún dato (posible duplicado o sin cambios)");

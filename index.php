@@ -77,7 +77,7 @@
           </div>
           <div class="form-group">
             <label for="message-text" class="col-form-label" >Descripción:</label>
-            <textarea class="form-control" id="descripcion-edit" name="titulo-edit"></textarea>
+            <textarea class="form-control" id="descripcion-edit" name="descripcion-edit"></textarea>
           </div>
         
       </div>
@@ -97,216 +97,219 @@
 <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
 
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   $(document).ready(function(){
-    
-     function formatoFecha(fecha_inicio){
-        const fechaCruda = fecha_inicio;
-        const fecha = new Date(fechaCruda.replace(" ", "T")); // convertir a formato ISO
-
-        const formateador = new Intl.DateTimeFormat('es-PE', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-        });
-
-        const fechaFormateada = formateador.format(fecha);
-        return fechaFormateada; 
-     }
-     $.ajax({
-            url:"php/tarea/tareas_list.php",
-            type:"GET",
-            success: function(response){
-                 var list_tareas=$("#lista_tareas");
-                 var data=JSON.parse(response);
-                    data.forEach(tarea => {
-              
-                    var tarea_des=tareaEstado(tarea.estado);
-                    var fecha=formatoFecha(tarea.fecha_inicio);
-                     lista=`<li class="card card-list p-3 mb-3">
-                                <p  style="color:#239b56;font-style: italic;font-weight:500">${fecha}</p>
-                                <h4 style="text-align:center">${tarea.titulo}</h4>
-                                <p>${tarea.descripcion}</p>
-                                <div class="btn btn-${tarea_des[0]} mb-2" style="border-radius: 50%; "> 
-                                  <i class="fa fa-${tarea_des[1]} ${tarea_des[2]} "></i>
-                                </div>
-                                <div style="display: flex; gap: 10px">
-                                    <a class="btn btn-warning fa fa-edit btn-editar" data-toggle="modal" 
-                                     data-target="#exampleModal" data-id="${tarea.id}"></a>
-                                    <a class="btn btn-secondary btn-estado fa fa-clock" data-id="${tarea.id}" ></a>
-                                    <a class="btn btn-danger btn-eliminar fa fa-trash" data-id="${tarea.id}" ></a>
-                                </div>
-                            </li> `
-                     list_tareas.append(lista); 
-                 
-                    });
-                
-            }
-     });
-
-     $(document).on("click",".btn-eliminar",function(e){
-        var id = $(this).data("id");
-        Swal.fire({
-                title: '¿Estás seguro?',
-                text: "Esta acción no se puede deshacer.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url:"php/tarea/tareas_eliminar.php",
-                            data:{codigo:id},
-                            type:"POST",
-                            success: function(response){
-                                actualizarDatos();
-                            }
-        });
-                    }
-                });
-        
-     });
-
-     $(document).on("click",".btn-editar",function(e){
-        var id = $(this).data("id");
-        $.ajax({
-            url:"php/tarea/tareas_edit.php",
-            data:{codigo:id},
-            type:"POST",
-            success: function(response){
-               var data=JSON.parse(response);
-               console.log(data);
-               var titulo= $("#titulo-edit");
-               var descripcion=$("#descripcion-edit"); 
-               var id = $("#id-tarea");
-               id.val(data[0]["id"]);
-
-               titulo.val(data[0]["titulo"]);
-               descripcion.val(data[0]["descripcion"]);
-              
-
-            }
-        });
-     });
-     
-     $(document).on("click",".btn-estado",function(e){
-        var id = $(this).data("id");
-        $.ajax({
-            url:"php/tarea/tareas_estado.php",
-            data:{codigo:id},
-            type:"POST",
-            success: function(response){
-               var data=JSON.parse(response);
-               toastr.success(data);
-               actualizarDatos();
-
-            }
-        });
-     });
-
-     //create tarea
-    $("#form-tarea").submit(function(e){
-        e.preventDefault();
-
-        var titulo =$("#titulo").val();
-        var descripcion=$("#descripcion").val();
-      
-        $.ajax({
-            url:"php/tarea/tareas_create.php",
-            data:{titulo:titulo,descripcion:descripcion},
-            type:"POST",
-            success: function(response){
-
-                var data=response;
-                if (data.status === "success") {
-                    toastr.success(data.message);
-                    actualizarDatos(); // o recargar la lista
-                } else {
-                    toastr.error(data.message);
-                }
-
-            }
-        });
-    });
    
-     $("#form-tarea-editar").submit(function(e){
+    function init(){
+        listarTareas();
+    }
+
+    function eventClick() {
+        $(document).on('click', '.btn-eliminar',eventEliminarTarea);
+        $(document).on("click",".btn-editar",eventCargarTarea);
+        $(document).on("click",".btn-estado",eventAcctualizarEstado);
+        $("#form-tarea").submit(eventCrearTarea)
+        $("#form-tarea-editar").submit(eventActualizarTarea);
+    }
+
+     function eventCargarTarea(e){
+        const id = $(this).data("id");
+        cargarDatosTarea(id);
+     }
+
+     function eventActualizarTarea(e){
         e.preventDefault();
         var id = $("#id-tarea").val();
-        console.log(id);
         var titulo =$("#titulo-edit").val();
         var descripcion=$("#descripcion-edit").val();
-        $.ajax({
-            url:"php/tarea/tareas_update.php",
-            data:{codigo:id,titulo:titulo,descripcion:descripcion},
-            type:"POST",
-            success: function(response){
-               var data=JSON.parse(response);
-               if (data.status=="success") {
-                    actualizarDatos();
-                    toastr.success(data.message);
-               }else if(data.status=="error"){
-                    toastr.error(data.message);
-               }else{
-                    toastr.warning(data.message);
-               }
+        actualizarDatos(id,titulo,descripcion);
+     }
 
+     function eventCrearTarea(e){
+        e.preventDefault();
+        var titulo =$("#titulo").val();
+        var descripcion=$("#descripcion").val();
+        crearTarea(titulo,descripcion);
+     }
+
+     function eventEliminarTarea(e){
+        const id = $(this).data('id');
+        eliminarTareas(id);
+     }
+
+     function eventAcctualizarEstado(){
+        const id = $(this).data("id");
+        actualizarEstado(id);
+     }
+
+    function apiRequest(url,data={},method='POST'){
+      return $.ajax({
+             url:url,
+             type:method,
+             data:data,
+             dataType:'json'
+            });
+    }
+
+    function listarTareas(){
+        apiRequest("php/tarea/tareas_list.php",{},'GET')
+        .then( data => {
+            renderizarTareas(data);
+        }).catch(() => {
+            toastr.error('Error al listar tareas');
+        });
+    }
+
+    function renderizarTareas(tareas){
+       
+        var list_tareas=$("#lista_tareas");
+        list_tareas.empty();
+
+        tareas.forEach(tarea => {
+
+            const tareaEstadoInfo = tareaEstado(tarea.estado);
+            const fecha = formatoFecha(tarea.fecha_inicio);
+            var lista=`<li class="card card-list p-3 mb-3">
+                        <p  style="color:#239b56;font-style: italic;font-weight:500">${fecha}</p>
+                        <h4 style="text-align:center">${tarea.titulo}</h4>
+                        <p>${tarea.descripcion}</p>
+                        <div class="btn btn-${tareaEstadoInfo[0]} mb-2" style="border-radius: 50%; "> 
+                            <i class="fa fa-${tareaEstadoInfo[1]} ${tareaEstadoInfo[2]} "></i>
+                        </div>
+                        <div style="display: flex; gap: 10px">
+                            <a class="btn btn-warning fa fa-edit btn-editar" data-toggle="modal" 
+                                data-target="#exampleModal" data-id="${tarea.id}"></a>
+                            <a class="btn btn-secondary btn-estado fa fa-clock" data-id="${tarea.id}" ></a>
+                            <a class="btn btn-danger btn-eliminar fa fa-trash" data-id="${tarea.id}" ></a>
+                        </div>
+                    </li> `
+                list_tareas.append(lista); 
+            
+        });
+    }
+
+    function eliminarTareas(id){
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "Esta acción no se puede deshacer.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'})
+        .then((result) => {
+            if (result.isConfirmed) {
+                apiRequest('php/tarea/tareas_eliminar.php', {codigo: id})
+                .then(data =>{
+                        if (data.status==="success") {
+                            toastr.success(data.message);
+                            listarTareas();    
+                        } else {
+                        toastr.error(data.message);
+                        }
+                });
             }
         });
-     });
+    }
 
-      
+    function cargarDatosTarea(id) {
+        apiRequest("php/tarea/tareas_edit.php",{codigo:id})
+        .then(data => {
+
+               if (data.status !=="error") {
+                var titulo= $("#titulo-edit");
+                var descripcion=$("#descripcion-edit"); 
+                var id = $("#id-tarea");
+
+                id.val(data[0]["id"]);
+                titulo.val(data[0]["titulo"]);
+                descripcion.val(data[0]["descripcion"]);
+               } else {
+                   toastr.error('Error al cargar tarea');
+               }
+        });
+    }
      
+    function actualizarEstado(id){
+       apiRequest("php/tarea/tareas_estado.php",{codigo:id})
+       .then(data=>{
+               if (data.status==="success") {
+                  toastr.success(data.message);
+                  listarTareas();
+               } else {
+                  toastr.error(data.message);    
+               }
+       });
+    }
 
-     function tareaEstado(estado){      
-            if (estado == 1) {
-                color="primary";
-                icono="check";
-                clas="";
-            }else{
-                color="warning";
-                icono="exclamation";
-                clas="p-1";
+    function crearTarea(titulo,descripcion){
+        apiRequest("php/tarea/tareas_create.php",{titulo,descripcion})
+        .then(data=>{
+
+            if (data.status === "success") {
+                toastr.success(data.message);
+                limpiarForm();
+                listarTareas(); 
+            } else {
+                toastr.error(data.message);
             }
+        });
+    }
 
-            let lista = [color, icono, clas];
+    function limpiarForm(){
+        $("#titulo").val("");
+        $("#descripcion").val("");
+    }
+   
+    function actualizarDatos(id,titulo,descripcion){
+       apiRequest("php/tarea/tareas_update.php",{codigo:id,titulo,descripcion})
+       .then(data=>{
+            if (data.status==="success") {   
+                toastr.success(data.message);
+                listarTareas();
+                $('#exampleModal').modal('hide'); // Cerrar modal al editar
+                actualizarPage();
+            }else if(data.status=="error"){
+                toastr.error(data.message);
+            }else{
+                toastr.warning(data.message);
+            }
+       });
+    }   
+  
 
-            return lista ;
-     }
+    function tareaEstado(estado){      
+        if (estado == 1) {
+            return ["primary", "check", ""];
+        } else {
+            return ["warning", "exclamation", "p-1"];
+        }
+    }
 
      function formatoFecha(fecha_inicio){
-        const fechaCruda = fecha_inicio;
-        const fecha = new Date(fechaCruda.replace(" ", "T")); // convertir a formato ISO
+        const fecha = new Date(fecha_inicio.replace(" ", "T"));
+        return new Intl.DateTimeFormat('es-PE', {
+            year: 'numeric', month: '2-digit', day: '2-digit',
+            hour: '2-digit', minute: '2-digit', hour12: true
+        }).format(fecha);
+    }
 
-        const formateador = new Intl.DateTimeFormat('es-PE', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-        });
-
-        const fechaFormateada = formateador.format(fecha);
-        return fechaFormateada; 
-     }
-
-     function actualizarDatos(){
+     function actualizarPage(){
         $("#loader").fadeIn();
         setTimeout(() => {
-        location.reload();
-     }, 1000);
+            location.reload();
+        }, 1000);
      }
 
+     init();
+     eventClick();
   });
         
+
+
 </script>
 </body>
 </html>
