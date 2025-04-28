@@ -111,7 +111,7 @@
     function eventClick() {
         $(document).on('click', '.btn-eliminar',eventEliminarTarea);
         $(document).on("click",".btn-editar",eventCargarTarea);
-        $(document).on("click",".btn-estado",eventAcctualizarEstado);
+        $(document).on("click",".btn-estado",eventActualizarEstado);
         $("#form-tarea").submit(eventCrearTarea)
         $("#form-tarea-editar").submit(eventActualizarTarea);
     }
@@ -141,29 +141,53 @@
         eliminarTareas(id);
      }
 
-     function eventAcctualizarEstado(){
+     function eventActualizarEstado(){
         const id = $(this).data("id");
         actualizarEstado(id);
      }
 
-    function apiRequest(url,data={},method='POST'){
-      return $.ajax({
-             url:url,
-             type:method,
-             data:data,
-             dataType:'json'
-            });
-    }
+    async function apiRequest(url, data = {}, method = 'POST') {
+        let options = {
+            method: method,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+        };
 
-    function listarTareas(){
+        if (method.toUpperCase() === 'POST') {
+            options.body = new URLSearchParams(data);
+        }
+
+        try {
+            const response = await fetch(url, options);
+            if (!response.ok) {
+                throw new Error('Error en la solicitud');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error en apiRequest:', error);
+            throw error; // Opcional: re-lanzar el error si quieres manejarlo afuera
+        }
+    }
+/*
+   async function listarTareas(){
         apiRequest("php/tarea/tareas_list.php",{},'GET')
         .then( data => {
             renderizarTareas(data);
         }).catch(() => {
             toastr.error('Error al listar tareas');
         });
-    }
+    }*/
+    async function listarTareas(){
+        try {
+        const tarea = await apiRequest("php/tarea/tareas_list.php",{},'GET');
+        renderizarTareas(tarea);
+        
+        } catch (error) {
+            toastr("error al listar tareas");
+        }
 
+    }
     function renderizarTareas(tareas){
        
         var list_tareas=$("#lista_tareas");
@@ -280,7 +304,6 @@
        });
     }   
   
-
     function tareaEstado(estado){      
         if (estado == 1) {
             return ["primary", "check", ""];
@@ -303,6 +326,75 @@
             location.reload();
         }, 1000);
      }
+
+function obtenerUsuariosSoloFetch(){
+   fetch("php/tarea/tareas_list.php") 
+   .then(response=>response.json())
+   .then(data=> console.log(data))
+   .catch(error=>console.log("Error solo Fech :"+error))
+}
+
+
+async function obtenerUsuarios(){
+    try {
+        const response =  await fetch("php/tarea/tareas_list.php");
+        const data= await response.json();
+        console.log(data);
+    } catch (error) {
+        console.log("Error",error);
+    }
+
+}
+
+
+async function obtenerDatosProfesionales(){
+    try {
+        $response= await fecht("",{
+            method:'POST',
+            header:{
+                'Content-Type':'aplication/json'
+            },
+            body: JSON.stringify({
+                titule:'Nuevo Post',
+                body:'este contenido post',
+                userId:1
+            })
+        });
+
+        const data= await response.json();
+        console.log('Post creado',data);
+
+    } catch (error) {
+        console.error("error",error);
+    }
+}
+
+async function apiRequest(url, data = {}, method = 'POST') {
+    let options = {
+        method: method,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+    };
+
+    if (method.toUpperCase() === 'POST') {
+        options.body = new URLSearchParams(data);
+    }
+
+    try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+            throw new Error('Error en la solicitud');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error en apiRequest:', error);
+        throw error; // Opcional: re-lanzar el error si quieres manejarlo afuera
+    }
+}
+
+obtenerUsuarios();
+obtenerUsuariosSoloFetch();
 
      init();
      eventClick();
